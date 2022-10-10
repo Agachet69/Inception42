@@ -1,0 +1,51 @@
+version: '3'
+services:
+  mynginx:
+    depends_on:
+      - mywordpress
+    build: ./srcs/nginx
+    image: "mynginx"
+    container_name: mynginx
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+     - "mywordpress:/var/www"
+    networks:
+     - app
+
+  mywordpress:
+    depends_on:
+      - mydb
+    build: ./srcs/wordpress
+    image: "mywordpress"
+    container_name: mywordpress
+   #ports:
+   #  - "9000:9000"
+    env_file: .env
+    restart: always
+    volumes:
+      - "mywordpress:/var/www"
+    networks:
+      - app
+
+  mydb:
+    build: ./srcs/mariadb
+    image: "mydb"
+    container_name: mydb
+    env_file: .env
+    restart: always
+   #ports:
+   #  - "3306:3306"
+    volumes:
+      - "dbdata:/var/lib/mysql"
+    networks:
+      - app
+
+volumes:
+  mywordpress:
+  dbdata:
+
+
+networks:
+  app:
