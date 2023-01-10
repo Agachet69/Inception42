@@ -1,14 +1,13 @@
 FROM debian:buster
 
-RUN apt-get update -y \
-&& apt-get install -y mariadb-server mariadb-client netcat procps
+#Updating packages
+RUN apt-get update
 
-COPY /start.sh ./
-RUN rm /etc/mysql/mariadb.conf.d/50-server.cnf
-COPY /mariadb-server.cnf /etc/mysql/mariadb.conf.d/
+#Install mariadb 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y apt-utils mariadb-server mariadb-client
 
-RUN chown -R mysql:mysql /var/lib/mysql \
-&& chmod 775 /var/lib/*
+#Copy configuration files
+COPY /conf/db.sql /etc/mysql/
+COPY /tools/setup.sh /
 
-ENTRYPOINT [ "bash", "start.sh" ]
-EXPOSE 3306
+CMD bash setup.sh
